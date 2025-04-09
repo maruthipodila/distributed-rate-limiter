@@ -15,7 +15,7 @@ In modern architectures, services are often replicated across multiple nodes. To
   - Leaky Bucket
   - Sliding Window Log / Counter
 
-![Architecture Diagram](./assets/distributed_rate_limiter_design.pdf)
+![Architecture Diagram](./assets/Distributed_Rate_Limiter_Design.pdf)
 
 ## ✨ Features
 
