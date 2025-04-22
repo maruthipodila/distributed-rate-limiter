@@ -1,6 +1,9 @@
 package limiter
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 type TokenBucket struct {
 	// Maximum number of tokens in the bucket
@@ -11,7 +14,9 @@ type TokenBucket struct {
 	tokensCounter int
 	// LastRefill is the last time the bucket was refilled
 	lastRefillTime time.Time
-}
+	// Mutex to protect the token counter
+	mutex sync.Mutex
+}	
 
 // NewTokenBucket creates a new TokenBucket with the given capacity and rate
 func NewTokenBucket(capacity int, refillInterval time.Duration) *TokenBucket {
@@ -29,6 +34,8 @@ func NewTokenBucket(capacity int, refillInterval time.Duration) *TokenBucket {
 // If the bucket is empty, check if the refill interval has passed
 // If yes, refill the bucket and return true
 func (bucket *TokenBucket) Allow(key string) bool {
+	bucket.mutex.Lock()
+	defer bucket.mutex.Unlock()
 	// Check if the refill interval has passed
 	if time.Since(bucket.lastRefillTime) > bucket.refillInterval {
 		// Refill the bucket
