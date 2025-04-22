@@ -23,10 +23,24 @@ func NewTokenBucket(capacity int, refillInterval time.Duration) *TokenBucket {
 	}
 }
 
+// When request comes, check if if bucket has more than 0 tokens
+// If yes, decrement the token count and return true
+// If no, return false
+// If the bucket is empty, check if the refill interval has passed
+// If yes, refill the bucket and return true
 func (bucket *TokenBucket) Allow(key string) bool {
-	// Check if the token bucket has enough tokens
-	// If yes, consume a token and return true
-	// If no, return false
-	return true
+	// Check if the refill interval has passed
+	if time.Since(bucket.lastRefillTime) > bucket.refillInterval {
+		// Refill the bucket
+		bucket.tokensCounter = bucket.capacity
+		bucket.lastRefillTime = time.Now()
+	}
+	// Check if there are tokens available
+	if bucket.tokensCounter > 0 {
+		// Decrement the token count
+		bucket.tokensCounter--
+		return true
+	}
+	return false
 }
 
